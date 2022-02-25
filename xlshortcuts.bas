@@ -1,5 +1,5 @@
 ' vim: set ft=vb :
-' Last updated: 2021-Jul-08 @ 10:30:56 AM
+' Last updated: 2022-Feb-25 @ 4:04:08 PM
 Option Explicit
 
 ' Shift key = "+" (plus sign)
@@ -177,13 +177,14 @@ Private Sub percent_style()
 End Sub
 
 Private Sub toggle_date_style()
-  Dim ds(0 To 5)
-  ds(0) = Array("DateShort", "dd mmm yy_);;""–""_);@"" """)
-  ds(1) = Array("DateLong", "dd mmm yyyy_);;""–""_);@"" """)
-  ds(2) = Array("DateNorm", "mm-dd-yyyy_);;""–""_);@"" """)
-  ds(3) = Array("DateMonthYear", "mmm-yyyy_);;""–""_);@"" """)
-  ds(4) = Array("DateYearMonthDay", "yyyy-mm-dd_);;""–""_);@"" """)
-  Call toggle_style(ds, "DateShort")
+  Dim ds(0 To 6)
+  ds(0) = Array("DateYearMonthDay", "yyyy-mm-dd_);;""–""_);@"" """)
+  ds(1) = Array("DateMonthYear", "mmm-yyyy_);;""–""_);@"" """)
+  ds(2) = Array("DateShort", "dd mmm yy_);;""–""_);@"" """)
+  ds(3) = Array("DateLong", "dd mmm yyyy_);;""–""_);@"" """)
+  ds(4) = Array("DateNorm", "mm-dd-yyyy_);;""–""_);@"" """)
+  ds(5) = Array("DateVeryShort", "mmm'yy_);;""–""_);@"" """)
+  Call toggle_style(ds, "DateYearMonthDay")
 End Sub
 
 Private Sub copy_across()
@@ -533,4 +534,6 @@ Sub copy_active_range_to_clipboard()
   Call clear_status_bar
 End Sub
 
-
+Sub reset_end_range()
+  ActiveWorkbook.ActiveSheet.UsedRange.Calculate
+End Sub
