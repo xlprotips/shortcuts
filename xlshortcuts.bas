@@ -1,5 +1,5 @@
 ' vim: set ft=vb :
-' Last updated: 2022-Feb-25 @ 4:04:08 PM
+' Last updated: 2022-May-04 @ 12:34:15 PM
 Option Explicit
 
 ' Shift key = "+" (plus sign)
@@ -257,7 +257,21 @@ Private Sub set_font_white_bg_black()
 End Sub
 
 Private Sub set_bg_light_gray()
-  Selection.Interior.Color = RGB(211, 211, 211)
+  Dim grays(0 to 4) As Long
+  ' Don't start with lightest color. Also, go from darker to lighter
+  ' instead of lighter to darker. "Feels" more intuitive.
+  grays(2) = RGB(248, 250, 252)
+  grays(1) = RGB(241, 245, 249)
+  grays(0) = RGB(226, 232, 240)
+  grays(4) = RGB(203, 213, 225)
+  grays(3) = RGB(148, 163, 184)
+  ' too dark
+  ' grays(5) = RGB(100, 116, 139)
+  ' grays(6) = RGB(71, 85, 105)
+  ' grays(7) = RGB(51, 65, 85)
+  ' grays(8) = RGB(30, 41, 59)
+  ' grays(9) = RGB(15, 23, 42)
+  toggle_background_color grays
 End Sub
 
 Private Sub set_bg_yellow()
@@ -456,21 +470,15 @@ Sub edit_shortcuts()
   form_help.Show
 End Sub
 
-Sub toggle_background_color()
-  Dim s(0 To 3)
-  s(0) = 65535    ' Yellow
-  s(1) = 13882323 ' Grey
-  s(2) = 16777215 ' No color
-
+Sub toggle_background_color(colors() As Long)
   On Error GoTo error_handler
-  Dim n As String, fmt As String
-  Dim sn As Integer
-  For sn = 0 To UBound(s) - 1
-    If Selection.Interior.Color = s(sn) Or sn = (UBound(s) - 1) Then
-      Selection.Interior.Color = s((sn + 1) Mod UBound(s))
+  Dim n As Integer
+  For n = 0 To UBound(colors) - 1
+    If Selection.Interior.Color = colors(n) Or n = (UBound(colors) - 1) Then
+      Selection.Interior.Color = colors((n + 1) Mod UBound(colors))
       Exit For
     End If
-  Next sn
+  Next n
   Exit Sub ' avoid error handler
 error_handler:
   MsgBox "Error: " & Err.Description, vbCritical, "Can't Set Background"
