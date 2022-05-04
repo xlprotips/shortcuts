@@ -20,6 +20,7 @@ Private Sub setup_shortcuts()
   ' Need to add these to customizations
   Application.OnKey "^%c", "toggle_center_across"
   Application.OnKey "^+r", "copy_active_range_to_clipboard"
+  Application.OnKey "^+%a", "set_font_gray"
 End Sub
 
 Sub Auto_Open()
@@ -237,6 +238,31 @@ End Sub
 
 Private Sub set_font_blue()
   Selection.Font.Color = RGB(0, 0, 255)
+End Sub
+
+Private Sub toggle_font_color(colors() As Long)
+  On Error GoTo error_handler
+  Dim n As Integer
+  For n = 0 To UBound(colors) - 1
+    If Selection.Font.Color = colors(n) Or n = (UBound(colors) - 1) Then
+      Selection.Font.Color = colors((n + 1) Mod UBound(colors))
+      Exit For
+    End If
+  Next n
+  Exit Sub ' avoid error handler
+error_handler:
+  MsgBox "Error: " & Err.Description, vbCritical, "Can't Set Background"
+End Sub
+
+Private Sub set_font_gray()
+  Dim grays(0 to 5) As Long
+  grays(5) = RGB(148, 163, 184)
+  grays(0) = RGB(100, 116, 139)
+  grays(1) = RGB(71, 85, 105)
+  grays(2) = RGB(51, 65, 85)
+  grays(3) = RGB(30, 41, 59)
+  grays(4) = RGB(15, 23, 42)
+  toggle_font_color grays
 End Sub
 
 Private Sub set_font_red()
