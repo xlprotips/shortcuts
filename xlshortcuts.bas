@@ -1,5 +1,5 @@
 ' vim: set ft=vb :
-' Last updated: 2022-May-04 @ 12:34:15 PM
+' Last updated: 2022-May-20 @ 11:57:08 AM
 Option Explicit
 
 ' Shift key = "+" (plus sign)
@@ -141,6 +141,7 @@ Private Sub comma_style()
   s(5) = Array("Number<", "$ #,##0_);$ (#,##0);$ ""–""_);@"" """)
   s(6) = Array("NegNoParen", "#,##0_);-#,##0_);""–""_);@"" """)
   Call toggle_style(s, "Comma")
+  Selection.HorizontalAlignment = xlRight
 End Sub
 
 ' TODO: consider taking this out. not used very often.
