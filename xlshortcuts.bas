@@ -1,5 +1,5 @@
 ' vim: set ft=vb :
-' Last updated: 2022-May-20 @ 11:57:08 AM
+' Last updated: 2022-Jul-06 @ 2:37:49 PM
 Option Explicit
 
 ' Shift key = "+" (plus sign)
@@ -571,4 +571,10 @@ End Sub
 
 Sub reset_end_range()
   ActiveWorkbook.ActiveSheet.UsedRange.Calculate
+End Sub
+
+Sub toggle_auto_decimal()
+  Dim curr As Boolean
+  curr = Application.FixedDecimal
+  Application.FixedDecimal = Not curr
 End Sub
