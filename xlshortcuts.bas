@@ -1,15 +1,16 @@
 ' vim: set ft=vb :
-' Last updated: 2022-Jul-06 @ 2:37:49 PM
+' Last updated: 2022-Jul-15 @ 8:39:40 AM
 Option Explicit
 
 ' Shift key = "+" (plus sign)
 ' Ctrl key = "^" (caret)
 ' Alt key = "%" (percent sign)
+' Enter key = "~" (numeric keypad enter = {ENTER})
 
 Private Sub setup_shortcuts()
   Dim r As Long, tw As Worksheet
   Dim keyseq As String, proc As String
-  Set tw = ThisWorkbook.Sheets("Shortcuts")
+  Set tw = ThisWorkbook.sheets("Shortcuts")
   r = 2
   While tw.Range("A" & r).Value <> ""
     keyseq = tw.Range("A" & r).Value
@@ -21,6 +22,7 @@ Private Sub setup_shortcuts()
   Application.OnKey "^%c", "toggle_center_across"
   Application.OnKey "^+r", "copy_active_range_to_clipboard"
   Application.OnKey "^+%a", "set_font_gray"
+  Application.OnKey "^%~", "show_sheet_navigator"
 End Sub
 
 Sub Auto_Open()
@@ -256,7 +258,7 @@ error_handler:
 End Sub
 
 Private Sub set_font_gray()
-  Dim grays(0 to 5) As Long
+  Dim grays(0 To 5) As Long
   grays(5) = RGB(148, 163, 184)
   grays(0) = RGB(100, 116, 139)
   grays(1) = RGB(71, 85, 105)
@@ -284,7 +286,7 @@ Private Sub set_font_white_bg_black()
 End Sub
 
 Private Sub set_bg_light_gray()
-  Dim grays(0 to 4) As Long
+  Dim grays(0 To 4) As Long
   ' Don't start with lightest color. Also, go from darker to lighter
   ' instead of lighter to darker. "Feels" more intuitive.
   grays(2) = RGB(248, 250, 252)
@@ -526,7 +528,7 @@ Sub add_new_shortcut_keyseq(keyseq As String, proc As String, desc As String)
   keyseq = Replace(keyseq, "-S", "+")
   keyseq = Replace(keyseq, "A-", "%")
   keyseq = Replace(keyseq, "-A", "%")
-  Set tw = ThisWorkbook.Sheets("Shortcuts")
+  Set tw = ThisWorkbook.sheets("Shortcuts")
   next_r = tw.Range("A2").End(xlDown).Row + 1
   tw.Range("A" & next_r).Value = keyseq
   tw.Range("B" & next_r).Value = proc
@@ -577,4 +579,9 @@ Sub toggle_auto_decimal()
   Dim curr As Boolean
   curr = Application.FixedDecimal
   Application.FixedDecimal = Not curr
+End Sub
+
+Private Sub show_sheet_navigator()
+  Load sheet_navigator
+  sheet_navigator.Show
 End Sub
