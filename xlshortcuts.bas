@@ -19,10 +19,10 @@ Private Sub setup_shortcuts()
     r = r + 1
   Wend
   ' Need to add these to customizations
-  Application.OnKey "^%c", "toggle_center_across"
-  Application.OnKey "^+r", "copy_active_range_to_clipboard"
-  Application.OnKey "^+%a", "set_font_gray"
-  Application.OnKey "^%~", "show_sheet_navigator"
+  Application.OnKey "^%c", "toggle_center_across"           ' ctrl+alt+c
+  Application.OnKey "^+r", "copy_active_range_to_clipboard" ' ctrl+shift+r
+  Application.OnKey "^+%a", "set_font_gray"                 ' ctrl+shift+alt+a
+  Application.OnKey "%~", "show_sheet_navigator"            ' alt+enter
 End Sub
 
 Sub Auto_Open()
