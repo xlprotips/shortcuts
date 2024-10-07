@@ -1,15 +1,17 @@
 ' vim: set ft=vb :
-' Last updated: 2022-Feb-25 @ 4:04:08 PM
+' Last updated: 2024-10-07 @ 08:35:34 AM
 Option Explicit
 
 ' Shift key = "+" (plus sign)
 ' Ctrl key = "^" (caret)
 ' Alt key = "%" (percent sign)
+' Enter key = "~" (numeric keypad enter = {ENTER})
+' F-keys = "{Fx}" (where x = the number you want to set)
 
 Private Sub setup_shortcuts()
   Dim r As Long, tw As Worksheet
   Dim keyseq As String, proc As String
-  Set tw = ThisWorkbook.Sheets("Shortcuts")
+  Set tw = ThisWorkbook.sheets("Shortcuts")
   r = 2
   While tw.Range("A" & r).Value <> ""
     keyseq = tw.Range("A" & r).Value
@@ -20,12 +22,19 @@ Private Sub setup_shortcuts()
   ' Need to add these to customizations
   Application.OnKey "^%c", "toggle_center_across"
   Application.OnKey "^+r", "copy_active_range_to_clipboard"
+  Application.OnKey "^+%a", "set_font_gray"
+  Application.OnKey "%~", "show_sheet_navigator"
+  Application.OnKey "^{F2}", "show_print_preview" ' like the old way!
 End Sub
 
 Sub Auto_Open()
   Call setup_shortcuts ' xlshortcuts
   Call set_hyperlink_macro_keys ' hyperlink
   Call reset_stack_idx
+End Sub
+
+Private Sub show_print_preview()
+  ActiveSheet.PrintPreview
 End Sub
 
 Sub clear_status_bar(Optional clear_now As Boolean = False)
@@ -140,6 +149,7 @@ Private Sub comma_style()
   s(5) = Array("Number<", "$ #,##0_);$ (#,##0);$ ""–""_);@"" """)
   s(6) = Array("NegNoParen", "#,##0_);-#,##0_);""–""_);@"" """)
   Call toggle_style(s, "Comma")
+  Selection.HorizontalAlignment = xlRight
 End Sub
 
 ' TODO: consider taking this out. not used very often.
@@ -239,6 +249,31 @@ Private Sub set_font_blue()
   Selection.Font.Color = RGB(0, 0, 255)
 End Sub
 
+Private Sub toggle_font_color(colors() As Long)
+  On Error GoTo error_handler
+  Dim n As Integer
+  For n = 0 To UBound(colors) - 1
+    If Selection.Font.Color = colors(n) Or n = (UBound(colors) - 1) Then
+      Selection.Font.Color = colors((n + 1) Mod UBound(colors))
+      Exit For
+    End If
+  Next n
+  Exit Sub ' avoid error handler
+error_handler:
+  MsgBox "Error: " & Err.Description, vbCritical, "Can't Set Background"
+End Sub
+
+Private Sub set_font_gray()
+  Dim grays(0 To 5) As Long
+  grays(5) = RGB(148, 163, 184)
+  grays(0) = RGB(100, 116, 139)
+  grays(1) = RGB(71, 85, 105)
+  grays(2) = RGB(51, 65, 85)
+  grays(3) = RGB(30, 41, 59)
+  grays(4) = RGB(15, 23, 42)
+  toggle_font_color grays
+End Sub
+
 Private Sub set_font_red()
   Selection.Font.Color = RGB(255, 0, 0)
 End Sub
@@ -257,7 +292,21 @@ Private Sub set_font_white_bg_black()
 End Sub
 
 Private Sub set_bg_light_gray()
-  Selection.Interior.Color = RGB(211, 211, 211)
+  Dim grays(0 To 4) As Long
+  ' Don't start with lightest color. Also, go from darker to lighter
+  ' instead of lighter to darker. "Feels" more intuitive.
+  grays(2) = RGB(248, 250, 252)
+  grays(1) = RGB(241, 245, 249)
+  grays(0) = RGB(226, 232, 240)
+  grays(4) = RGB(203, 213, 225)
+  grays(3) = RGB(148, 163, 184)
+  ' too dark
+  ' grays(5) = RGB(100, 116, 139)
+  ' grays(6) = RGB(71, 85, 105)
+  ' grays(7) = RGB(51, 65, 85)
+  ' grays(8) = RGB(30, 41, 59)
+  ' grays(9) = RGB(15, 23, 42)
+  toggle_background_color grays
 End Sub
 
 Private Sub set_bg_yellow()
@@ -456,21 +505,15 @@ Sub edit_shortcuts()
   form_help.Show
 End Sub
 
-Sub toggle_background_color()
-  Dim s(0 To 3)
-  s(0) = 65535    ' Yellow
-  s(1) = 13882323 ' Grey
-  s(2) = 16777215 ' No color
-
+Sub toggle_background_color(colors() As Long)
   On Error GoTo error_handler
-  Dim n As String, fmt As String
-  Dim sn As Integer
-  For sn = 0 To UBound(s) - 1
-    If Selection.Interior.Color = s(sn) Or sn = (UBound(s) - 1) Then
-      Selection.Interior.Color = s((sn + 1) Mod UBound(s))
+  Dim n As Integer
+  For n = 0 To UBound(colors) - 1
+    If Selection.Interior.Color = colors(n) Or n = (UBound(colors) - 1) Then
+      Selection.Interior.Color = colors((n + 1) Mod UBound(colors))
       Exit For
     End If
-  Next sn
+  Next n
   Exit Sub ' avoid error handler
 error_handler:
   MsgBox "Error: " & Err.Description, vbCritical, "Can't Set Background"
@@ -491,7 +534,7 @@ Sub add_new_shortcut_keyseq(keyseq As String, proc As String, desc As String)
   keyseq = Replace(keyseq, "-S", "+")
   keyseq = Replace(keyseq, "A-", "%")
   keyseq = Replace(keyseq, "-A", "%")
-  Set tw = ThisWorkbook.Sheets("Shortcuts")
+  Set tw = ThisWorkbook.sheets("Shortcuts")
   next_r = tw.Range("A2").End(xlDown).Row + 1
   tw.Range("A" & next_r).Value = keyseq
   tw.Range("B" & next_r).Value = proc
@@ -537,3 +580,16 @@ End Sub
 Sub reset_end_range()
   ActiveWorkbook.ActiveSheet.UsedRange.Calculate
 End Sub
+
+Sub toggle_auto_decimal()
+  Dim curr As Boolean
+  curr = Application.FixedDecimal
+  Application.FixedDecimal = Not curr
+End Sub
+
+Private Sub show_sheet_navigator()
+  Load sheet_navigator
+  sheet_navigator.Show
+End Sub
+
+
